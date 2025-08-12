@@ -1,0 +1,4 @@
+USER='minecraft'
+HOME="/home/${USER}"
+SERVERNAME="${PWD##*-}"
+: ${SERVERNAME:=current}

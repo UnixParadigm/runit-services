@@ -1,0 +1,18 @@
+sv check SERVICE >/dev/null || exit 1
+
+[ -r conf ] && . ./conf
+SERVICENAME="${PWD##*/}"
+
+CUSTOM=""
+: ${LOG:="/var/log/${PWD##*/}.log"}
+: ${LOG:="/var/log/${SERVICENAME}.log"}
+
+export USER="USERNAME"
+export GROUP="$(id -Gn "$USER" | tr ' ' ':')"
+export HOME="/home/${USER}"
+
+mkdir -p "${LOG%/*}"
+install -m440 -o"$USER" -g"$USER" /dev/null "$LOG"
+
+exec >"$LOG" 2>&1
+exec chpst -u "${USER}:${GROUP}" BINARY

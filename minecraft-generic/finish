@@ -1,0 +1,4 @@
+#!/bin/sh
+[ -r ./conf ] && . ./conf
+
+rsync -aAX --delete "${HOME}/${SERVERNAME}" "${HOME}/backups/${SERVERNAME}-$(date '+%Y-%m-%d')"

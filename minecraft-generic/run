@@ -1,0 +1,34 @@
+#!/bin/sh
+exec 2>&1
+trap '' TERM HUP QUIT
+_serverKill() {
+	screen -S "$SERVERNAME" -X stuff 'me   Server going down in 3 seconds.\n'
+	sleep 3
+	screen -S "$SERVERNAME" -X stuff 'save-all\nstop\n'
+	sleep 3
+	sync
+}
+
+SERVERNAME="${PWD##*-}"
+: ${SERVERNAME:="current"}
+: ${LOG:="/var/log/minecraft/${SERVERNAME}-$(date '+%Y-%m-%d_%T').log"}
+
+export USER="minecraft"
+export GROUP="$(id -Gn "$USER" | tr ' ' ':')"
+export HOME="/home/${USER}"
+export TERM='vt100'
+
+mkdir -p "${LOG%/*}"
+install -m440 -o"$USER" -g"$USER" /dev/null "${LOG}"
+
+[ ! -f "/etc/cron.d/minecraft-${SERVERNAME}" ] && echo "0 6 * * * /usr/bin/sv restart minecraft-${SERVERNAME}" >"/etc/cron.d/minecraft-${SERVERNAME}"
+
+[ ! -d "${HOME}/${SERVERNAME}" ] && exit 1
+cd "${HOME}/${SERVERNAME}"
+[ ! -f './run.sh' ] && exit 1
+
+screen -S "$SERVERNAME" -X quit
+screen -wipe "$SERVERNAME"
+trap '_serverKill' TERM HUP QUIT
+#exec chpst -u "${USER}:${GROUP}" ./run.sh nogui
+exec screen -L -Logfile "$LOG" -DmS "$SERVERNAME" chpst -u "${USER}:${GROUP}" ./run.sh nogui

@@ -1,0 +1,5 @@
+#!/bin/sh
+[ -r ./conf ] && . ./conf
+
+chpst -u "$USER:$(id -Gn "$USER" | tr ' ' ':')" screen -r "${SERVERNAME}" -X stuff
+exit "$?"
