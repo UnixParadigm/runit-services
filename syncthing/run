@@ -11,4 +11,4 @@ install -m440 -o"$USER" -g"$USER" "$LOG"
 
 cd "${HOME}"
 exec >"$LOG" 2>&1
-exec chpst -u "${USER}:${GROUP}" syncthing serve --no-restart --no-browser --no-upgrade --gui-address=0.0.0.0
+exec chpst -u "${USER}:${GROUP}" syncthing serve --no-restart --no-browser --no-upgrade --gui-address=127.0.0.1:8384
