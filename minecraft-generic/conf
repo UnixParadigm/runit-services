@@ -1,4 +1,9 @@
-USER='minecraft'
+export TERM='vt100'
+
+USER="minecraft"
+GROUP="$(id -Gn "$USER" | tr ' ' ':')"
 HOME="/home/${USER}"
+
 SERVERNAME="${PWD##*-}"
-: ${SERVERNAME:=current}
+LOG="${HOME}/log/${SERVERNAME}-$(date '+%Y-%m-%d_%T').log"
+: ${SERVERNAME:="current"}

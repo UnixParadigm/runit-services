@@ -1,0 +1,8 @@
+#!/bin/sh
+_COMMAND="${0##*/}"
+[ "$_COMMAND" != "control" ] || exit 1
+cd "${0%/*}"
+_SERVICE="${PWD##*/}"
+
+echo \[Running sv command \(sv "$_COMMAND" "$_SERVICE"\)\]
+sv "$_COMMAND" "$_SERVICE"
