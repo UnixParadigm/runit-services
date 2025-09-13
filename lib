@@ -9,8 +9,10 @@ CUSTOM=""
 : ${LOG:="/var/log/${SERVICENAME}.log"}
 
 export USER="USERNAME"
-export GROUP="$(id -Gn "$USER" | tr ' ' ':')"
 export HOME="/home/${USER}"
+
+GROUP="$(id -Gn "$USER" | tr ' ' ':')"
+
 
 mkdir -p "${LOG%/*}"
 install -m440 -o"$USER" -g"$USER" /dev/null "$LOG"
