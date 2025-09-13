@@ -1,0 +1,7 @@
+#!/bin/sh
+
+export USER="${PWD##*-}"
+export HOME="/home/${USER}"
+export SVDIR="${HOME}/.local/service"
+
+exec chpst -u "$USER:$(id -Gn "$USER" | tr ' ' ':')" runsvdir "$SVDIR" ..................................................
