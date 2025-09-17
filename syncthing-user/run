@@ -1,0 +1,8 @@
+#!/bin/sh
+umask 027
+
+SERVICENAME="${PWD##*/}"
+
+cd "${HOME}/${SERVICENAME}"
+exec >"${SERVICENAME}.log" 2>&1
+exec syncthing serve --no-restart --no-browser --no-upgrade --gui-address=127.0.0.1:9092
