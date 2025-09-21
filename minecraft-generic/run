@@ -1,5 +1,6 @@
 #!/bin/sh
 [ -r ./conf ] && . ./conf
+umask 027
 
 chmod 750 ./supervise
 chmod -R 640 ./supervise/*
