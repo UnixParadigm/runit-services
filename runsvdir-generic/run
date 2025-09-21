@@ -4,5 +4,5 @@ export USER="${PWD##*-}"
 export HOME="/home/${USER}"
 export SVDIR="${HOME}/.local/service"
 
-cd "$SVDIR"
+cd "$SVDIR" || exit 1
 exec chpst -u "$USER:$(id -Gn "$USER" | tr ' ' ':')" runsvdir "$SVDIR" ..................................................
