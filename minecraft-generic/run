@@ -4,10 +4,10 @@ umask 027
 
 chmod 750 ./supervise
 chmod -R 640 ./supervise/*
-chown -R "$USER":"$GROUP" ./supervise
+chown -R "$USER":"$USER" ./supervise
 
 mkdir -p "${LOG%/*}"
-install -m640 -o"$USER" -g"$GROUP" /dev/null "${LOG}"
+install -m640 -o"$USER" -g"$USER" /dev/null "${LOG}"
 ln -fs "${LOG##*/}" "${LOG%/*}/current"
 
 [ ! -f "/etc/cron.d/minecraft-${SERVERNAME}" ] && echo "0 6 * * * root /usr/bin/sv t minecraft-${SERVERNAME}" >"/etc/cron.d/minecraft-${SERVERNAME}"
@@ -18,26 +18,13 @@ cd "${HOME}/${SERVERNAME}" || exit 1
 
 WORLDNAME="$(grep 'level-name' server.properties | cut -d= -f2)"
 if [ -d "./${WORLDNAME}/datapacks/.git" ]; then
-	cd "./${WORLDNAME}/datapacks/"
-	chpst -u "${USER}:${GROUP}" sh -c 'git fetch; git reset --hard origin/main; git pull origin main'
-	cd ../..
+	if cd "./${WORLDNAME}/datapacks/"; then
+		chpst -u "${USER}:${GROUPLIST}" sh -c 'git fetch; git reset --hard origin/main; git pull origin main'
+		cd ../..
+	fi
 fi
 
-chpst -u "${USER}:${GROUP}" screen -S "$SERVERNAME" -X quit
-chpst -u "${USER}:${GROUP}" screen -wipe "$SERVERNAME"
+chpst -u "${USER}:${GROUPLIST}" screen -S "$SERVERNAME" -X quit
+chpst -u "${USER}:${GROUPLIST}" screen -wipe "$SERVERNAME"
 
-exec chpst -u "${USER}:${GROUP}" screen -DmS "$SERVERNAME" sh -c "./run.sh nogui | tee \"$LOG\""
-#exec screen -L -Logfile "$LOG" -DmS "$SERVERNAME" chpst -u "${USER}:${GROUP}" sh -c ./run.sh nogui
-#exec screen -L -Logfile "$LOG" -DmS "$SERVERNAME" chpst -u "${USER}:${GROUP}" sh -c "
-#	exec 2>&1
-#	_serverKill() {
-#		screen -S \"$SERVERNAME\" -X stuff 'me going down in 3 seconds.\n'
-#		sleep 3
-#		screen -S \"$SERVERNAME\" -X stuff 'save-all\nstop\n'
-#		sleep 1
-#		sync
-#		screen -S \"$SERVERNAME\" -X quit
-#	}
-#	trap '_serverKill' TERM HUP QUIT INT
-#	./run.sh nogui
-#"
+exec chpst -u "${USER}:${GROUPLIST}" screen -DmS "$SERVERNAME" sh -c "./run.sh nogui | tee /dev/tty | tr -cd '[:alnum:]._-' >\"$LOG\""

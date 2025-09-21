@@ -1,7 +1,7 @@
 export TERM='vt100'
 
 USER="minecraft"
-GROUP="$(id -Gn "$USER" | tr ' ' ':')"
+GROUPLIST="$(id -Gn "$USER" | tr ' ' ':')"
 HOME="/home/${USER}"
 
 SERVERNAME="${PWD##*-}"
