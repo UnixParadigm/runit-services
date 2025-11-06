@@ -1,0 +1,5 @@
+#!/bin/sh
+[ -r ./conf ] && . ./conf
+
+screen -r "${SERVERNAME}" -X stuff
+exit "$?"

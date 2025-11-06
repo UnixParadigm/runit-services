@@ -1,0 +1,5 @@
+export TERM='vt100'
+
+SERVERNAME="${PWD##*-}"
+LOG="${HOME}/log/${SERVERNAME}-$(date '+%Y-%m-%d_%T').log"
+: ${SERVERNAME:="current"}

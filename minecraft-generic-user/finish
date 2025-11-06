@@ -1,0 +1,11 @@
+#!/bin/sh
+[ -r ./conf ] && . ./conf
+
+BACKUPTARGET="${HOME}/backups/${SERVERNAME}-$(date '+%Y-%m-%d')"
+
+rsync -acAX --delete "${HOME}/${SERVERNAME}" "$BACKUPTARGET"
+
+find "$BACKUPTARGET" -type d -exec chmod 750 {} \;
+find "$BACKUPTARGET" -type f -exec chmod 640 {} \;
+chmod 540 "${BACKUPTARGET}/${SERVERNAME}/run.sh"
+:

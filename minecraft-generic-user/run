@@ -1,0 +1,31 @@
+#!/bin/sh
+[ -r ./conf ] && . ./conf
+umask 027
+
+chmod 750 ./supervise
+chmod -R 640 ./supervise/*
+
+mkdir -p "${LOG%/*}"
+install -m640 /dev/null "${LOG}"
+ln -fs "${LOG##*/}" "${LOG%/*}/current"
+
+[ -d "${HOME}/${SERVERNAME}" ] || exit 1
+cd "${HOME}/${SERVERNAME}" || exit 1
+[ -f './run.sh' ] || exit 1
+
+(crontab -l; echo '0 6 * * *' "SVDIR=\"$SVDIR\" /usr/bin/sv t minecraft-${SERVERNAME}") | cat -n - | sort -uk2 | sort -n | cut -f2- | crontab
+
+WORLDNAME="$(grep 'level-name' server.properties | cut -d= -f2)"
+if [ -d "./${WORLDNAME}/datapacks/.git" ]; then
+	if cd "./${WORLDNAME}/datapacks/"; then
+		git fetch
+		git reset --hard origin/main
+		git pull origin main
+		cd ../..
+	fi
+fi
+
+screen -S "$SERVERNAME" -X quit
+screen -wipe "$SERVERNAME"
+
+exec screen -DmS "$SERVERNAME" sh -c "./run.sh nogui | tee /dev/tty | tr -cd '[:alnum:]._-' >\"$LOG\""
